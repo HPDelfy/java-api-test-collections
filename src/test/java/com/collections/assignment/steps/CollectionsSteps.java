@@ -36,17 +36,14 @@ public class CollectionsSteps {
 
     @Value("${key}")
     private String rijksMuseumApiKey;
-    private String COLLECTIONS_ENDPOINT = "/api/language/collection";
-
-    private String PAGE_PARAM = "p";
-    private String KEY_PARAM = "key";
-
-    private HashMap<String, String> queryParams = new HashMap<>();
-    private HashMap<String, Collections> collectionResponse = new HashMap<>();
-    private ObjectMapper collectionMapper = new ObjectMapper();
 
     @Autowired
     private ScenarioContext context;
+    private String COLLECTIONS_ENDPOINT = "/api/language/collection";
+    private String KEY_PARAM = "key";
+    private HashMap<String, String> queryParams = new HashMap<>();
+    private HashMap<String, Collections> collectionResponse = new HashMap<>();
+    private ObjectMapper collectionMapper = new ObjectMapper();
     private Scenario scenario;
 
 
@@ -62,7 +59,7 @@ public class CollectionsSteps {
         HttpResponse<String> actualResponse = collections.getCollections(getCollectionsUrl(queryParams, language));
         assertThat(actualResponse.statusCode()).as("verify collections status code").isEqualTo(200);
         Collections collections = collectionMapper.readValue(actualResponse.body(), Collections.class);
-        collectionResponse.put(language,collections);
+        collectionResponse.put(language, collections);
         context.setCollectionsData(collectionResponse);
         log.info("Retrieved the collections response successfully");
     }
@@ -75,18 +72,18 @@ public class CollectionsSteps {
 
     @Then("the collections response status code should be {int}")
     public void collectionsResponseShouldBe(int statusCode) {
-        scenario.log("Collections response status code : "+ context.getCollectionsResponse().statusCode());
+        scenario.log("Collections response status code : " + context.getCollectionsResponse().statusCode());
         assertThat(context.getCollectionsResponse().statusCode()).as("verify collections status code").isEqualTo(statusCode);
     }
 
     @Then("Collections count should match for both {string} and {string} languages")
     public void collectionCountShouldMatchForBothNLAndENLanguages(String nlLanguage, String enLanguage) {
         int nlCollectionCount = context.getCollectionsData().get(nlLanguage).getCount();
-        log.info("Collections count for the language nl: "+ nlCollectionCount);
-        scenario.log("Collections count for the language nl: "+ nlCollectionCount);
+        log.info("Collections count for the language nl: " + nlCollectionCount);
+        scenario.log("Collections count for the language nl: " + nlCollectionCount);
         int enCollectionCount = context.getCollectionsData().get(enLanguage).getCount();
-        log.info("Collections count for the language en: "+ enCollectionCount);
-        scenario.log("Collections count for the language en: "+ enCollectionCount);
+        log.info("Collections count for the language en: " + enCollectionCount);
+        scenario.log("Collections count for the language en: " + enCollectionCount);
         assertThat(nlCollectionCount).as("verify Collections count between languages").isEqualTo(enCollectionCount);
 
     }
@@ -97,25 +94,25 @@ public class CollectionsSteps {
         List<ArtObjects> artObjects = context.getCollectionsData().get(Language).getArtObjects();
         int expectedLinkCount = artObjects.size();
         List<String> links = artObjects.stream().map(artObject -> {
-                try{
-                    String link = artObject.getLinks().getSelf().replace("http","https");
-                    HttpResponse<String> actualResponse  = collections.getCollections(appendQueryParams(link,queryParams));
-                    if (actualResponse.statusCode() == 200) {
-                        log.info("verified the status code for the link :" + link);
-                        scenario.log("verified link: " + link);
-                        return link;
-                    }else {
-                        log.info("The following link is not working" + link);
-                        scenario.log("unverified link: " + link);
-                        return "";
-                    }
-                } catch (Exception e) {
+                    try {
+                        String link = artObject.getLinks().getSelf().replace("http", "https");
+                        HttpResponse<String> actualResponse = collections.getCollections(appendQueryParams(link, queryParams));
+                        if (actualResponse.statusCode() == 200) {
+                            log.info("verified the status code for the link :" + link);
+                            scenario.log("verified link: " + link);
+                            return link;
+                        } else {
+                            log.info("The following link is not working" + link);
+                            scenario.log("unverified link: " + link);
+                            return "";
+                        }
+                    } catch (Exception e) {
                         return "";
 
-                }
-            })
-            .filter(link -> link != "")
-            .toList();
+                    }
+                })
+                .filter(link -> link != "")
+                .toList();
         assertThat(links.size()).as("All the links should be verified").isEqualTo(expectedLinkCount);
 
     }

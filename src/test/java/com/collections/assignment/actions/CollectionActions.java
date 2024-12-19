@@ -1,7 +1,5 @@
 package com.collections.assignment.actions;
 import com.collections.assignment.configs.ScenarioContext;
-import io.cucumber.java.Before;
-import io.cucumber.java.Scenario;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
