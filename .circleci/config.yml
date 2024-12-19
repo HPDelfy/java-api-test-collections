@@ -1,0 +1,23 @@
+version: 2.1
+
+jobs:
+  build-and-test:
+    docker:
+      - image: cimg/openjdk:17
+    steps:
+      - checkout
+      - run:
+          name: Build
+          command: mvn clean install -DskipTests
+      - run:
+          name: Test
+          command: mvn verify -P e2e
+      - store_test_results:
+          path: ~/project/target/cucumber/cucumber-results.xml
+      - store_artifacts:
+          path: ~/project/target/cucumber
+
+workflows:
+  sample:
+    jobs:
+      - build-and-test
