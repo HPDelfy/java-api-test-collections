@@ -14,8 +14,11 @@ Feature: Collections test scenarios
       | T1 | nl       |
       | T2 | en       |
 
-  Scenario: SC3 Validate the collection detail api link in collections
-    Given the list of collections for 'nl'
-    And the list of collections for 'en'
-    Then All the Collection detail links should work for 'nl'
-    And All the Collection detail links should work for 'en'
+  Scenario Outline: SC3-TC<TC> Validate the <language> collection detail api link in collections
+    Given the list of collections for '<language>'
+    Then All the Collection detail links should be available for '<language>'
+
+    Examples:
+      | TC | language |
+      | T1 | nl       |
+      | T2 | en       |

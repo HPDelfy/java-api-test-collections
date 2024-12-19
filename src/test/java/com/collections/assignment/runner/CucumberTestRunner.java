@@ -8,9 +8,7 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         features =  {"src/test/resources/features"},
         glue = {"com.collections.assignment.steps"},
-        plugin = {"pretty",
-                "json:target/cucumber/cucumber-report.json",
-                "junit:target/cucumber/cucumber-results.xml"},
+        plugin = {"pretty", "json:target/cucumber/cucumber-report.json"},
         stepNotifications = true,
         tags = "not @Ignore"
 )

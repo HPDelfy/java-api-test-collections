@@ -53,6 +53,7 @@ public class CollectionsSteps {
     @Before()
     public void before(Scenario scenario) {
         this.scenario = scenario;
+        context.setScenario(scenario);
     }
 
     @Given("the list of collections for {string}")
@@ -74,6 +75,7 @@ public class CollectionsSteps {
 
     @Then("the collections response status code should be {int}")
     public void collectionsResponseShouldBe(int statusCode) {
+        scenario.log("Collections response status code : "+ context.getCollectionsResponse().statusCode());
         assertThat(context.getCollectionsResponse().statusCode()).as("verify collections status code").isEqualTo(statusCode);
     }
 
@@ -81,31 +83,41 @@ public class CollectionsSteps {
     public void collectionCountShouldMatchForBothNLAndENLanguages(String nlLanguage, String enLanguage) {
         int nlCollectionCount = context.getCollectionsData().get(nlLanguage).getCount();
         log.info("Collections count for the language nl: "+ nlCollectionCount);
+        scenario.log("Collections count for the language nl: "+ nlCollectionCount);
         int enCollectionCount = context.getCollectionsData().get(enLanguage).getCount();
         log.info("Collections count for the language en: "+ enCollectionCount);
+        scenario.log("Collections count for the language en: "+ enCollectionCount);
         assertThat(nlCollectionCount).as("verify Collections count between languages").isEqualTo(enCollectionCount);
 
     }
 
-    @Then("All the Collection detail links should work for {string}")
-    public void collectionDetailLinksShouldWork(String Language) {
+    @Then("All the Collection detail links should be available for {string}")
+    public void collectionDetailLinksShouldBeAvailable(String Language) {
         queryParams.put(KEY_PARAM, rijksMuseumApiKey);
         List<ArtObjects> artObjects = context.getCollectionsData().get(Language).getArtObjects();
-        List<String> links = artObjects.stream()
-                .map(artObject -> {
-                    try{
-                        String link = artObject.getLinks().getSelf().replace("http","https");
-                        HttpResponse<String> actualResponse  = collections.getCollections(appendQueryParams(link,queryParams));
-                        assertThat(actualResponse.statusCode()).as("verify the status code for the link :" + link).isEqualTo(200);
+        int expectedLinkCount = artObjects.size();
+        List<String> links = artObjects.stream().map(artObject -> {
+                try{
+                    String link = artObject.getLinks().getSelf().replace("http","https");
+                    HttpResponse<String> actualResponse  = collections.getCollections(appendQueryParams(link,queryParams));
+                    if (actualResponse.statusCode() == 200) {
+                        log.info("verified the status code for the link :" + link);
+                        scenario.log("verified link: " + link);
                         return link;
-                    } catch (Exception e) {
-                        return null;
-
+                    }else {
+                        log.info("The following link is not working" + link);
+                        scenario.log("unverified link: " + link);
+                        return "";
                     }
-                })
-                .filter(link -> link != null) // Filter out null values (if any errors occurred)
-                .collect(Collectors.toList());
-        log.info("verified links are:" + links);
+                } catch (Exception e) {
+                        return "";
+
+                }
+            })
+            .filter(link -> link != "")
+            .toList();
+        assertThat(links.size()).as("All the links should be verified").isEqualTo(expectedLinkCount);
+
     }
 
     private String getCollectionsUrl(Map<String, String> params, String language) {
@@ -117,17 +129,12 @@ public class CollectionsSteps {
     }
 
     public static String appendQueryParams(String endpoint, Map<String, String> params) {
-        // If the map is empty, return the endpoint as is
         if (params == null || params.isEmpty()) {
             return endpoint;
         }
-
-        // Build query string using a lambda
         String queryString = params.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
                 .collect(Collectors.joining("&"));
-
-        // Append the query string to the endpoint
         return endpoint + "?" + queryString;
     }
 }

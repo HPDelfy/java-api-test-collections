@@ -6,7 +6,7 @@ import org.springframework.context.annotation.ComponentScan;
 import java.net.http.HttpClient;
 
 @Configuration
-@ComponentScan(basePackages = {"com.collections.assignment.actions", "com.collections.assignment.configs"})
+@ComponentScan(basePackages = {"com.collections.assignment"})
 public class SpringTestConfiguration {
     @Bean
     public HttpClient noSSLHTTPClient() {

@@ -4,6 +4,7 @@ import java.net.http.HttpResponse;
 import java.util.HashMap;
 
 import com.collections.assignment.models.Collections;
+import io.cucumber.java.Scenario;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
@@ -17,4 +18,8 @@ public class ScenarioContext {
     @Getter
     @Setter
     private HttpResponse<String> collectionsResponse;
+
+    @Getter
+    @Setter
+    private Scenario scenario;
 }
