@@ -5,6 +5,7 @@ Feature: Collections test scenarios
     And the list of collections for 'en'
     Then Collections count should match for both 'nl' and 'en' languages
 
+  @error
   Scenario Outline: SC2-TC<TC> Retrieve collections without key for <language>
     Given retrieve the list of collections for '<language>' without key
     Then the collections response status code should be 401

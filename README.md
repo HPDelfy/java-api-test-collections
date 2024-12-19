@@ -9,7 +9,7 @@ Test coverage
 * RestAPI call to connections endpoint without key
 * Verify collections detail endpoint returned in the collections response
 
-Observation
+Observations
 * Page query parameters are not working as expected
 * Collections detail link in the api documentation is incorrect
 
@@ -32,7 +32,11 @@ java-api-test-collections/src/test/resources/application.properties
 
 #### Run via mvn
 
+Run all scenarios
 run `mvn verify -P e2e` at root directory
+
+Run specific scenarios
+run `mvn verify -P e2e  -Dcucumber.filter.tags="@error"` at root directory
 
 #### Run via Cucumber Test Runner
 
@@ -55,3 +59,10 @@ Report Outputs in
 /java-api-test-collections/target/cucumber/cucumber-html-reports/overview-features.html
 ``
 
+#### Circle Ci integration
+CI pipeline has been added for this project to build and run the test. Hence tests can be triggered from circle ci.
+HTML Reports are available under artifact
+``
+~/project/target/cucumber/cucumber-html-reports/overview-features.html
+``
+url - https://app.circleci.com/pipelines/circleci/BDncfVcwa7FomwW9oz1ivj/afxAEYii6cfXeefbHDaEr
